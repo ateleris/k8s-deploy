@@ -23,24 +23,18 @@ export async function getDeploymentConfig(): Promise<DeploymentConfig> {
       )
    }
 
-   const imageNames =
-      core
-         .getInput('images')
-         .split('\n')
-         .filter((image) => image.length > 0) || []
+   const imageName = core.getInput('targetImage')
    const imageDockerfilePathMap: {[id: string]: string} = {}
 
    const pullImages = !(core.getInput('pull-images').toLowerCase() === 'false')
    if (pullImages) {
       //Fetching from image label if available
-      for (const image of imageNames) {
-         try {
-            imageDockerfilePathMap[image] = await getDockerfilePath(image)
-         } catch (ex) {
-            core.warning(
-               `Failed to get dockerfile path for image ${image.toString()}: ${ex} `
-            )
-         }
+      try {
+         imageDockerfilePathMap[imageName] = await getDockerfilePath(imageName)
+      } catch (ex) {
+         core.warning(
+            `Failed to get dockerfile path for image ${imageName.toString()}: ${ex} `
+         )
       }
    }
 

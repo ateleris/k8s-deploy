@@ -13,6 +13,7 @@ import {
 } from '../strategyHelpers/deploymentHelper'
 import {DeploymentStrategy} from '../types/deploymentStrategy'
 import {parseTrafficSplitMethod} from '../types/trafficSplitMethod'
+import fs from 'fs-extra'
 
 export async function deploy(
    kubectl: Kubectl,
@@ -22,6 +23,17 @@ export async function deploy(
    // update manifests
    const inputManifestFiles: string[] = updateManifestFiles(manifestFilePaths)
    core.debug(`Input manifest files: ${inputManifestFiles}`)
+
+   // replace image tags
+   const imageToReplace = core.getInput('imageToReplace')
+   const targetImage = core.getInput('targetImage')
+   core.startGroup('Replacing image tags')
+   inputManifestFiles.forEach(async (file) => {
+      core.debug(`Processing file: ${file}`)
+      const fileContent = await fs.readFile(file, 'utf8')
+      const updatedContent = fileContent.replace(imageToReplace, targetImage)
+      fs.writeFile(file, updatedContent, {encoding: 'utf8'})
+   })
 
    // deploy manifests
    core.startGroup('Deploying manifests')

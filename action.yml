@@ -10,9 +10,12 @@ inputs:
    manifests:
       description: 'Path to the manifest files which will be used for deployment.'
       required: true
-   images:
+   imageToReplace:
+      description: Exact names of the images in the manifest files to be replaced with the new image
+      required: true
+   targetImage:
       description: 'Fully qualified resource URL of the image(s) to be used for substitutions on the manifest files Example: contosodemo.azurecr.io/helloworld:test'
-      required: false
+      required: true
    imagepullsecrets:
       description: 'Name of a docker-registry secret that has already been set up within the cluster. Each of these secret names are added under imagePullSecrets field for the workloads found in the input manifest files'
       required: false
